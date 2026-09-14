@@ -52,6 +52,7 @@ export default function PersonManagementPage() {
   const [playingAudioId, setPlayingAudioId] = useState<string | null>(null);
   const [audioUrls, setAudioUrls] = useState<Record<string, string>>({});
 
+  const [deletingAudioId, setDeletingAudioId] = useState<string | null>(null);
 
   function handleAudioChange(event: ChangeEvent<HTMLInputElement>) {
   const files = Array.from(event.target.files || []);
@@ -203,6 +204,60 @@ async function handlePlayAudio(audio: AudioFile) {
   }));
 
   return data.signedUrl;
+}
+
+  async function handleDeleteAudio(audio: AudioFile) {
+  const confirmed = window.confirm(
+    `Are you sure you want to delete "${audio.title}"?`
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  setDeletingAudioId(audio.id);
+  setError("");
+  setSuccess("");
+
+  // 1. Delete the physical file from Storage
+  const { error: storageError } = await supabase.storage
+    .from("private-media")
+    .remove([audio.file_path]);
+
+  if (storageError) {
+    console.error(storageError);
+    setError(storageError.message);
+    setDeletingAudioId(null);
+    return;
+  }
+
+  // 2. Delete the database record
+  const { error: databaseError } = await supabase
+    .from("audio_files")
+    .delete()
+    .eq("id", audio.id);
+
+  if (databaseError) {
+    console.error(databaseError);
+    setError(databaseError.message);
+    setDeletingAudioId(null);
+    return;
+  }
+
+  // 3. Remove it from the page immediately
+  setUploadedAudioFiles((current) =>
+    current.filter((item) => item.id !== audio.id)
+  );
+
+  // 4. Remove its cached signed URL
+  setAudioUrls((current) => {
+    const updated = { ...current };
+    delete updated[audio.id];
+    return updated;
+  });
+
+  setSuccess(`"${audio.title}" was deleted successfully.`);
+  setDeletingAudioId(null);
 }
 
   async function loadImage(path: string) {
@@ -600,7 +655,7 @@ async function handlePlayAudio(audio: AudioFile) {
     accept="audio/*"
     multiple
     onChange={handleAudioChange}
-    className="block w-full text-sm"
+    className="block w-full text-sm animate-fade-in rounded-lg border px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
   />
 
   {audioFiles.length > 0 && (
@@ -631,7 +686,7 @@ async function handlePlayAudio(audio: AudioFile) {
         type="button"
         onClick={uploadAudioFiles}
         disabled={uploadingAudio}
-        className="mt-4 rounded-lg bg-black px-5 py-3 text-white disabled:opacity-50"
+        className="mt-4 rounded-lg bg-white px-5 py-3 text-white disabled:opacity-50"
       >
         {uploadingAudio
           ? "Uploading..."
@@ -657,26 +712,49 @@ async function handlePlayAudio(audio: AudioFile) {
     </h3>
 
     {uploadedAudioFiles.map((audio) => (
-        <div 
-          className="mt-4"
-          key={audio.id}>
-        {audioUrls[audio.id] ? (
-          <audio
-            controls
-            className="w-full"
-            src={audioUrls[audio.id]}
-          />
-        ) : (
-          <button
-            type="button"
-            onClick={() => getAudioUrl(audio)}
-            className="rounded-lg bg-black px-4 py-2 text-sm text-white hover:bg-gray-800"
-          >
-            ▶ Load & Play
-          </button>
-        )}
-    </div>
-    ))}
+  <div
+    key={audio.id}
+    className="mt-4 rounded-lg border p-4"
+  >
+    <p className="font-medium">
+      {audio.title}
+    </p>
+
+    {audio.description && (
+      <p className="mt-1 text-sm text-gray-500">
+        {audio.description}
+      </p>
+    )}
+
+    {audioUrls[audio.id] ? (
+      <audio
+        controls
+        className="mt-4 w-full border"
+        src={audioUrls[audio.id]}
+      />
+    ) : (
+      <button
+        type="button"
+        onClick={() => getAudioUrl(audio)}
+        className="mt-4 rounded-lg bg-emerald-600 px-4 py-2 text-sm text-white hover:bg-emerald-700 disabled:opacity-50"
+      >
+        ▶ Load & Play
+      </button>
+    )}
+
+    <button
+      type="button"
+      onClick={() => handleDeleteAudio(audio)}
+      disabled={deletingAudioId === audio.id}
+      className="mt-3 rounded-lg bg-red-600 px-4 py-2 m-2 text-sm text-white hover:bg-red-700 disabled:opacity-50"
+    >
+      {deletingAudioId === audio.id
+        ? "Deleting..."
+        : "🗑 Delete"}
+    </button>
+  </div>
+))}
+    
   </div>
 )}
 
