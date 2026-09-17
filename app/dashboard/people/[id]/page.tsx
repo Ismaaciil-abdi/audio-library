@@ -668,7 +668,7 @@ async function handlePlayAudio(audio: AudioFile) {
   {audioFiles.map((file, index) => (
     <li
       key={`${file.name}-${file.size}-${file.lastModified}-${index}`}
-      className="rounded-lg bg-gray-50 px-4 py-3 text-sm"
+      className="rounded-lg border px-4 py-3 text-sm"
     >
       <div className="font-medium">
         {file.name}
@@ -686,7 +686,7 @@ async function handlePlayAudio(audio: AudioFile) {
         type="button"
         onClick={uploadAudioFiles}
         disabled={uploadingAudio}
-        className="mt-4 rounded-lg bg-white px-5 py-3 text-white disabled:opacity-50"
+        className="mt-4 rounded-lg bg-white px-5 py-3 text-black disabled:opacity-50"
       >
         {uploadingAudio
           ? "Uploading..."

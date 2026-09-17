@@ -74,7 +74,7 @@ export default async function DashboardPage() {
 
           <Link
             href="/dashboard/people/new"
-            className="rounded-lg bg-black px-4 py-2 text-white hover:bg-gray-800"
+            className="rounded-lg bg-white px-4 py-2 text-black hover:bg-gray-800"
           >
             + Add Person
           </Link>
@@ -132,7 +132,7 @@ export default async function DashboardPage() {
 
           </div>
         ) : (
-          <div className="rounded-xl bg-white p-10 text-center shadow">
+          <div className="rounded-xl border p-10 text-center shadow">
             <h2 className="text-xl font-semibold">
               No people yet
             </h2>
@@ -143,7 +143,7 @@ export default async function DashboardPage() {
 
             <Link
               href="/dashboard/people/new"
-              className="mt-5 inline-block rounded-lg px-5 py-3 hover:opacity-80"
+              className="mt-5 inline-block bg-white text-black rounded-lg px-5 py-3 hover:opacity-80"
             >
               Add Person
             </Link>
