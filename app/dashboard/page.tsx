@@ -55,13 +55,12 @@ export default async function DashboardPage() {
         ...person,
         imageUrl,
       };
-    })
+    }),
   );
 
   return (
     <main className="min-h-screen bg-dark p-8">
       <div className="mx-auto max-w-5xl">
-
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
@@ -71,7 +70,6 @@ export default async function DashboardPage() {
               Manage your people and audio files.
             </p>
           </div>
-
           <Link
             href="/dashboard/people/new"
             className="rounded-lg bg-white px-4 py-2 text-black hover:bg-gray-800"
@@ -83,13 +81,11 @@ export default async function DashboardPage() {
         {/* People */}
         {peopleWithImages.length > 0 ? (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-
             {peopleWithImages.map((person) => (
               <div
                 key={person.id}
                 className="overflow-hidden rounded-xl bg-dark shadow border border-gray-600"
               >
-
                 {/* Profile Image */}
                 <div className="h-48 w-full bg-gray-100">
                   {person.imageUrl ? (
@@ -100,18 +96,14 @@ export default async function DashboardPage() {
                     />
                   ) : (
                     <div className="flex h-full items-center justify-center">
-                      <span className="text-gray-400">
-                        No image
-                      </span>
+                      <span className="text-gray-400">No image</span>
                     </div>
                   )}
                 </div>
 
                 {/* Person Details */}
                 <div className="p-5">
-                  <h2 className="text-xl font-semibold">
-                    {person.name}
-                  </h2>
+                  <h2 className="text-xl font-semibold">{person.name}</h2>
 
                   {person.description && (
                     <p className="mt-2 line-clamp-3 text-sm text-gray-600">
@@ -126,16 +118,12 @@ export default async function DashboardPage() {
                     Manage
                   </Link>
                 </div>
-
               </div>
             ))}
-
           </div>
         ) : (
           <div className="rounded-xl border p-10 text-center shadow">
-            <h2 className="text-xl font-semibold">
-              No people yet
-            </h2>
+            <h2 className="text-xl font-semibold">No people yet</h2>
 
             <p className="mt-2 text-gray-500">
               Add your first person to get started.
@@ -149,7 +137,6 @@ export default async function DashboardPage() {
             </Link>
           </div>
         )}
-
       </div>
     </main>
   );
